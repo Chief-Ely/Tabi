@@ -2,7 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-
+import 'package:hive_flutter/hive_flutter.dart';
 import 'change_notifier/registration_controller.dart';
 
 import 'widgets/form_field.dart' as custom;
@@ -197,17 +197,21 @@ class _RegisterPageState extends State<RegisterPage> {
                         child: Selector<RegistrationController, bool>(
                           selector: (_, controller) => controller.isLoading,
                           builder: (_, isLoading, __) => custom.Button(
-                            onPressed: isLoading
-                                ? null
-                                : () {
-                                    if (formKey.currentState?.validate() ??
-                                        false) {
-                                      registrationController
-                                          .authenticateWithEmailAndPassword(
-                                            context: context,
-                                          );
-                                    }
-                                  },
+                          onPressed: isLoading
+                              ? null
+                              : () {
+                                  if (formKey.currentState?.validate() ?? false) {
+                                    // Temporary test login logic
+                                    _testLogin(context);
+
+                                    // 🔒 Original login logic (commented out for now)
+                                    // registrationController
+                                    //     .authenticateWithEmailAndPassword(
+                                    //         context: context,
+                                    //     );
+                                  }
+                              },
+
                             child: isLoading
                                 ? SizedBox(
                                     width: 24,
@@ -295,4 +299,66 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
     );
   }
+
+//   //Use to bypass for test purposes only
+//   void _testLogin(BuildContext context) {
+//   final email = emailController.text.trim();
+//   final password = passwordController.text.trim();
+
+//   if (email == 'law@gmail.com' && password == 'Password123456') {
+//     Navigator.pushReplacementNamed(context, '/dashboard');
+//   } else {
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       const SnackBar(content: Text('Test login failed')),
+//     );
+//   }
+// }
+void _testLogin(BuildContext context) async {
+  final username = userNameController.text.trim();
+  final email = emailController.text.trim();
+  final password = passwordController.text.trim();
+
+  // Open or create Hive box
+  var box = await Hive.openBox('users');
+
+  // Check if email already registered
+  final existingUser = box.get(email);
+
+  if (existingUser == null) {
+    // 📝 Store new user
+    await box.put(email, {
+      'username': username,
+      'email': email,
+      'password': password,
+    });
+
+    // ✅ Show registration success
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Registration successful! You are now logged in.')),
+    );
+
+    // You can navigate to login page or dashboard if needed
+    Navigator.pushReplacementNamed(context, '/dashboard');
+  } else {
+    // 🔒 Try to login
+    if (existingUser['password'] == password) {
+      // ✅ Login success
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login successful. Welcome ${existingUser['username']}!')),
+      );
+
+      // You can navigate to dashboard/home here
+      Navigator.pushReplacementNamed(context, '/dashboard');
+    } else {
+      // ❌ Incorrect password
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Incorrect password.')),
+      );
+    }
+  }
+}
+
+
+
+
 }

@@ -8,13 +8,28 @@ import 'saved_page.dart';
 import 'stt.dart';
 import 'settings_page.dart';
 import 'history_page.dart';
-import 'settings_page.dart';
 import 'home_page.dart';
-import 'register_page.dart';
 import 'change_notifier/registration_controller.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+
+// void main() {
+//   setPathUrlStrategy();
+//   runApp(
+//     MultiProvider(
+//       providers: [
+//         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+//         ChangeNotifierProvider(create: (_) => RegistrationController()),
+//       ],
+//       child: const MyApp(),
+//     ),
+//   );
+// }
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter(); // ✅ Required for Hive to work
   setPathUrlStrategy();
+
   runApp(
     MultiProvider(
       providers: [
@@ -25,6 +40,7 @@ void main() {
     ),
   );
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

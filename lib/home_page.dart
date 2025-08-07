@@ -310,7 +310,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
             backgroundColor: theme.colorScheme.primary,
             shape: const CircleBorder(),
             onPressed: () {
-              Navigator.pushNamed(context, '/voice');
+              //Navigator.pushNamed(context, '/voice');
+              // // ✅ MODIFIED — receives recognized text from VoiceInputPage
+              // Navigator.pushNamed(context, '/voice').then((result) {
+              //   if (result is String && result.isNotEmpty) {
+              //     // Do something with the recognized text
+              //     // For example: print it or save to a controller or show a dialog
+              //     print('Recognized text: $result');
+
+              //     // You can update a controller or show a snackbar:
+              //     ScaffoldMessenger.of(context).showSnackBar(
+              //       SnackBar(content: Text('Voice Input: $result')),
+              //     );
+              //   }
+              // });
+              Navigator.pushNamed(context, '/voice').then((result) {
+              if (result is String && result.isNotEmpty) {
+                // ✅ Set the recognized text directly into the TextField
+                _textController.text = result;
+              }
+              });
+
             },
             child: Icon(Icons.mic, color: theme.colorScheme.onPrimary),
           ),
