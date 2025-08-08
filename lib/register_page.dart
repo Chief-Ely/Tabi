@@ -202,7 +202,12 @@ class _RegisterPageState extends State<RegisterPage> {
                               : () {
                                   if (formKey.currentState?.validate() ?? false) {
                                     // Temporary test login logic
-                                    _testLogin(context);
+                                    if(isRegisterMode){
+                                      _testLogin(context, isRegistering: true); // 👈 register mode
+                                    }
+                                    else{
+                                      _testLogin(context, isRegistering: false); // 👈 login mode
+                                    }
 
                                     // 🔒 Original login logic (commented out for now)
                                     // registrationController
@@ -313,44 +318,95 @@ class _RegisterPageState extends State<RegisterPage> {
 //     );
 //   }
 // }
-void _testLogin(BuildContext context) async {
+// void _testLogin(BuildContext context) async {
+//   final username = userNameController.text.trim();
+//   final email = emailController.text.trim();
+//   final password = passwordController.text.trim();
+
+//   // Open or create Hive box
+//   var box = await Hive.openBox('users');
+
+//   // Check if email already registered
+//   final existingUser = box.get(email);
+
+//   if (existingUser == null) {
+//     // 📝 Store new user
+//     await box.put(email, {
+//       'username': username,
+//       'email': email,
+//       'password': password,
+//     });
+
+//     // ✅ Show registration success
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       SnackBar(content: Text('Registration successful! You are now logged in.')),
+//     );
+
+//     // You can navigate to login page or dashboard if needed
+//     Navigator.pushReplacementNamed(context, '/dashboard');
+//   } else {
+//     // 🔒 Try to login
+//     if (existingUser['password'] == password) {
+//       // ✅ Login success
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(content: Text('Login successful. Welcome ${existingUser['username']}!')),
+//       );
+
+//       // You can navigate to dashboard/home here
+//       Navigator.pushReplacementNamed(context, '/dashboard');
+//     } else {
+//       // ❌ Incorrect password
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(content: Text('Incorrect password.')),
+//       );
+//     }
+//   }
+// }
+Future<void> _testLogin(BuildContext context, {required bool isRegistering}) async {
   final username = userNameController.text.trim();
   final email = emailController.text.trim();
   final password = passwordController.text.trim();
 
-  // Open or create Hive box
   var box = await Hive.openBox('users');
-
-  // Check if email already registered
   final existingUser = box.get(email);
 
-  if (existingUser == null) {
-    // 📝 Store new user
+  if (isRegistering) {
+    // 📌 Reject if email already exists
+    if (existingUser != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Email is already registered! Please log in.')),
+      );
+      return;
+    }
+
+    // ✅ Store new user
     await box.put(email, {
       'username': username,
       'email': email,
       'password': password,
     });
 
-    // ✅ Show registration success
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Registration successful! You are now logged in.')),
+      SnackBar(content: Text('Registration successful! Welcome $username.')),
     );
-
-    // You can navigate to login page or dashboard if needed
     Navigator.pushReplacementNamed(context, '/dashboard');
+
   } else {
-    // 🔒 Try to login
+    // 📌 Reject if account does not exist
+    if (existingUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No account found for this email. Please register.')),
+      );
+      return;
+    }
+
+    // 📌 Check password
     if (existingUser['password'] == password) {
-      // ✅ Login success
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Login successful. Welcome ${existingUser['username']}!')),
       );
-
-      // You can navigate to dashboard/home here
       Navigator.pushReplacementNamed(context, '/dashboard');
     } else {
-      // ❌ Incorrect password
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Incorrect password.')),
       );

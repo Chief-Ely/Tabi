@@ -31,9 +31,10 @@ class _CameraPageState extends State<CameraPage> {
     _initTts(); // Initialize text-to-speech
   }
 
-  // Initialize text-to-speech
+  // CHANGE in _initTts
   Future<void> _initTts() async {
-    await _tts.setLanguage('en-US');
+    // Set Filipino (Tagalog) voice
+    await _tts.setLanguage('fil-PH');
     await _tts.setSpeechRate(_speechRate);
     await _tts.setVolume(1.0);
     await _tts.setPitch(1.0);
@@ -121,26 +122,93 @@ class _CameraPageState extends State<CameraPage> {
     }
   }
 
-  // Process image file with OCR
-  Future<void> _processImageFile(String imagePath) async {
-    try {
-      final inputImage = InputImage.fromFilePath(imagePath);
-      final recognizedText = await _textRecognizer.processImage(inputImage);
+  // // Process image file with OCR
+  // Future<void> _processImageFile(String imagePath) async {
+  //   try {
+  //     final inputImage = InputImage.fromFilePath(imagePath);
+  //     final recognizedText = await _textRecognizer.processImage(inputImage);
 
-      setState(() {
-        _extractedText = recognizedText.text;
-      });
+  //     setState(() {
+  //       _extractedText = recognizedText.text;
+  //     });
 
-      if (_extractedText.isNotEmpty) {
-        await _tts.speak(_extractedText);
-      }
-    } catch (e) {
-      print('Error recognizing text: $e');
-      setState(() {
-        _extractedText = 'Error recognizing text: $e';
-      });
+  //     if (_extractedText.isNotEmpty) {
+  //       await _tts.speak(_extractedText);
+  //     }
+  //   } catch (e) {
+  //     print('Error recognizing text: $e');
+  //     setState(() {
+  //       _extractedText = 'Error recognizing text: $e';
+  //     });
+  //   }
+  // }
+  // //CHANGE in _processImageFile
+  // Future<void> _processImageFile(String imagePath) async {
+  //   try {
+  //     final inputImage = InputImage.fromFilePath(imagePath);
+  //     final recognizedText = await _textRecognizer.processImage(inputImage);
+
+  //     setState(() {
+  //       _extractedText = recognizedText.text;
+  //     });
+
+  //     if (_extractedText.isNotEmpty) {
+  //       await _tts.setLanguage('fil-PH'); // ensure Filipino each time
+  //       await _tts.speak(_extractedText);
+  //     }
+  //   } catch (e) {
+  //     print('Error recognizing text: $e');
+  //     setState(() {
+  //       _extractedText = 'Error recognizing text: $e';
+  //     });
+  //   }
+  // }
+//   Future<void> _processImageFile(String imagePath) async {
+//   try {
+//     final inputImage = InputImage.fromFilePath(imagePath);
+//     final recognizedText = await _textRecognizer.processImage(inputImage);
+
+//   //  setState(() {
+//       final extracted  = recognizedText.text;
+//   // });
+
+//     if (_extractedText.isNotEmpty) {
+//       await _tts.setLanguage('fil-PH');
+//       await _tts.speak(extracted);
+
+//       // ✅ Return to previous screen with extracted text
+//       Navigator.pop(context, extracted);
+//     }
+//   } catch (e) {
+//     print('Error recognizing text: $e');
+//     setState(() {
+//       _extractedText = 'Error recognizing text: $e';
+//     });
+//   }
+// }
+
+Future<void> _processImageFile(String imagePath) async {
+  try {
+    final inputImage = InputImage.fromFilePath(imagePath);
+    final recognizedText = await _textRecognizer.processImage(inputImage);
+
+    final extracted = recognizedText.text;
+
+    if (extracted.isNotEmpty) {
+      // await _tts.setLanguage('fil-PH');
+      // await _tts.speak(extracted);
+
+      Navigator.pop(context, extracted);
     }
+  } catch (e) {
+    print('Error recognizing text: $e');
+    setState(() {
+      _extractedText = 'Error recognizing text: $e';
+    });
   }
+}
+
+
 
   // Copy text to clipboard
   Future<void> _copyToClipboard() async {
@@ -261,34 +329,34 @@ class _CameraPageState extends State<CameraPage> {
           ],
         ],
       ),
-      bottomNavigationBar: _extractedText.isNotEmpty
-          ? SafeArea(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Row(
-                  children: [
-                    const Text('Speed:'),
-                    Expanded(
-                      child: Slider(
-                        value: _speechRate,
-                        min: 0.1,
-                        max: 1.0,
-                        divisions: 9,
-                        label: _speechRate.toStringAsFixed(1),
-                        onChanged: _adjustSpeechRate,
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.stop),
-                      onPressed: _tts.stop,
-                      tooltip: 'Stop speech',
-                    ),
-                  ],
-                ),
-              ),
-            )
-          : null,
+      // bottomNavigationBar: _extractedText.isNotEmpty
+      //     ? SafeArea(
+      //         child: Padding(
+      //           padding:
+      //               const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      //           child: Row(
+      //             children: [
+      //               const Text('Speed:'),
+      //               Expanded(
+      //                 child: Slider(
+      //                   value: _speechRate,
+      //                   min: 0.1,
+      //                   max: 1.0,
+      //                   divisions: 9,
+      //                   label: _speechRate.toStringAsFixed(1),
+      //                   onChanged: _adjustSpeechRate,
+      //                 ),
+      //               ),
+      //               IconButton(
+      //                 icon: const Icon(Icons.stop),
+      //                 onPressed: _tts.stop,
+      //                 tooltip: 'Stop speech',
+      //               ),
+      //             ],
+      //           ),
+      //         ),
+      //       )
+      //     : null,
     );
   }
 }

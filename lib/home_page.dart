@@ -8,9 +8,14 @@ import 'stt.dart';
 import 'settings_page.dart';
 import 'history_page.dart';
 import 'services/auth_service.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:flutter_tts/flutter_tts.dart';
+
+final TextEditingController _textController = TextEditingController();
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
+  
 
   @override
   Widget build(BuildContext context) {
@@ -50,9 +55,32 @@ class HomePage extends StatelessWidget {
           case '/dictionary':
             page = const DictionaryPage();
             break;
-          case '/camera':
-            page = const CameraPage();
-            break;
+          // case '/camera':
+          //   page = const CameraPage();
+          //   break;
+
+          // // ✅ MODIFIED: receive text from CameraPage
+          // case '/camera':
+          //   page = FutureBuilder<String?>(
+          //     future: Navigator.push<String>(
+          //       context,
+          //       MaterialPageRoute(builder: (_) => const CameraPage()),
+          //     ),
+          //     builder: (context, snapshot) {
+          //       if (snapshot.connectionState == ConnectionState.done &&
+          //           snapshot.data != null &&
+          //           snapshot.data!.isNotEmpty) {
+                      
+          //         // ✅ Set the text in the existing controller instance
+          //         _textController.text = snapshot.data!; // <-- fixed
+          //       }
+          //       return const CameraPage();
+          //     },
+          //   );
+          //   break;
+
+          // // ✅ END MODIFIED
+
           default:
             page = const RegisterPage();
         }
@@ -75,6 +103,7 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   late Animation<Color?> _colorAnimation;
+  
 
   @override
   void initState() {
@@ -99,11 +128,11 @@ class _SplashScreenState extends State<SplashScreen>
     });
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _controller.dispose();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -209,11 +238,22 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  final TextEditingController _textController = TextEditingController();
+  // final TextEditingController _textController = TextEditingController();
   String _translatedText = '';
   bool _isTranslating = false;
   String _fromLanguage = 'Bisaya';
   String _toLanguage = 'Tagalog';
+  final stt.SpeechToText _speech = stt.SpeechToText();
+  FlutterTts _flutterTts = FlutterTts();
+
+  Future<void> _speak(String text) async {
+    if (text.isNotEmpty) {
+      await _flutterTts.setLanguage("en-US"); // You can change to desired language
+      await _flutterTts.setSpeechRate(0.5); // Speed: 0.0 to 1.0
+      await _flutterTts.setPitch(1.0); // Pitch: 0.5 to 2.0
+      await _flutterTts.speak(text);
+    }
+  }
 
   void _translateText() {
     if (_textController.text.isEmpty) return;
@@ -225,7 +265,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     Future.delayed(const Duration(seconds: 1), () {
       setState(() {
         _translatedText =
-            "This is a simulated translation of: ${_textController.text}";
+            "This is a test translation of: ${_textController.text}";
         _isTranslating = false;
       });
     });
@@ -240,11 +280,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
-  @override
-  void dispose() {
-    _textController.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _textController.dispose();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -452,22 +492,48 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     );
                   },
                 ),
+                // IconButton(
+                //   icon: Icon(Icons.volume_up, color: theme.iconTheme.color),
+                //   onPressed: () {
+                //     ScaffoldMessenger.of(context).showSnackBar(
+                //       SnackBar(
+                //         content: Text(
+                //           'Playing translation',
+                //           style: TextStyle(
+                //             color: theme.textTheme.bodyLarge?.color,
+                //           ),
+                //         ),
+                //         backgroundColor: theme.colorScheme.tertiary,
+                //       ),
+                //     );
+                //   },
+                // ),
+                // Modified to trigger Speech-to-Text from stt.dart
+                // TTS Button for translated text
                 IconButton(
                   icon: Icon(Icons.volume_up, color: theme.iconTheme.color),
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Playing translation',
-                          style: TextStyle(
-                            color: theme.textTheme.bodyLarge?.color,
+                  onPressed: () async {
+                    if (_translatedText.isNotEmpty) {
+                      await _flutterTts.setLanguage("fil-PH"); // Set to Filipino, change if needed
+                      await _flutterTts.setPitch(1.0);
+                      await _flutterTts.speak(_textController.text);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'No translation to play',
+                            style: TextStyle(
+                              color: theme.textTheme.bodyLarge?.color,
+                            ),
                           ),
+                          backgroundColor: theme.colorScheme.tertiary,
                         ),
-                        backgroundColor: theme.colorScheme.tertiary,
-                      ),
-                    );
+                      );
+                    }
                   },
                 ),
+
+
               ],
             ),
           ],
@@ -615,15 +681,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       Navigator.pushNamed(context, '/dictionary');
                     },
                   ),
+                  // _BottomAction(
+                  //   icon: Icons.camera_alt,
+                  //   label: 'Camera',
+                  //   iconColor: theme.iconTheme.color,
+                  //   textColor: theme.textTheme.bodyLarge?.color,
+                  //   onPressed: () {
+                  //     Navigator.pushNamed(context, '/camera');
+                  //   },
+                  // ),
                   _BottomAction(
                     icon: Icons.camera_alt,
                     label: 'Camera',
                     iconColor: theme.iconTheme.color,
                     textColor: theme.textTheme.bodyLarge?.color,
                     onPressed: () {
-                      Navigator.pushNamed(context, '/camera');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const CameraPage()),
+                      ).then((result) {
+                        if (result is String && result.isNotEmpty) {
+                          setState(() {
+                            _textController.text = result;
+                          });
+                        }
+                      });
                     },
                   ),
+
                 ],
               )
             : Row(
@@ -749,4 +834,6 @@ class _BottomAction extends StatelessWidget {
       ),
     );
   }
+  
 }
+

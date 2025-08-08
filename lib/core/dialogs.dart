@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:a_project/widgets/confirmation_dialog.dart' as custom;
-import 'package:a_project/widgets/message_dialog.dart' as custom;
+import 'package:Tabi/widgets/confirmation_dialog.dart' as custom;
+import 'package:Tabi/widgets/message_dialog.dart' as custom;
 
 Future<bool?> showConfirmationDialog({
   required BuildContext context,

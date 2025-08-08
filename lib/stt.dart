@@ -15,6 +15,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
   String _recognizedText = '';
   String _statusMessage = 'Tap the microphone to start speaking';
   String _errorMessage = '';
+  
 
   @override
   void initState() {
@@ -66,7 +67,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
           }
         }),
         listenFor: const Duration(seconds: 30),
-        localeId: 'en_US', // Change to your preferred language
+        localeId: 'fil_PH', // Change to your preferred language
       );
 
       if (started) {

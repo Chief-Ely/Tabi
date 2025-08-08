@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:a_project/core/dialogs.dart';
-import 'package:a_project/services/auth_service.dart';
+import 'package:Tabi/core/dialogs.dart';
+import 'package:Tabi/services/auth_service.dart';
 
 const Map<String, String> authExceptionMapper = {
   'email-already-in-use':
