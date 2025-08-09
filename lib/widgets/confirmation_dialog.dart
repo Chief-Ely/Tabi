@@ -4,14 +4,12 @@ import 'dialog_card.dart';
 import 'button.dart' as custom;
 
 class ConfirmationDialog extends StatelessWidget {
-  const ConfirmationDialog({
-    super.key,
-    required this.title,
-  });
+  const ConfirmationDialog({super.key, required this.title});
   final String title;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return DialogCard(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -19,9 +17,10 @@ class ConfirmationDialog extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
+              color: theme.hintColor,
             ),
             textAlign: TextAlign.start,
           ),

@@ -31,10 +31,9 @@ class _CameraPageState extends State<CameraPage> {
     _initTts(); // Initialize text-to-speech
   }
 
-  // CHANGE in _initTts
+  // Initialize text-to-speech
   Future<void> _initTts() async {
-    // Set Filipino (Tagalog) voice
-    await _tts.setLanguage('fil-PH');
+    await _tts.setLanguage('en-US');
     await _tts.setSpeechRate(_speechRate);
     await _tts.setVolume(1.0);
     await _tts.setPitch(1.0);
@@ -53,10 +52,7 @@ class _CameraPageState extends State<CameraPage> {
 
       final firstCamera = cameras.first;
 
-      _controller = CameraController(
-        firstCamera,
-        ResolutionPreset.medium,
-      );
+      _controller = CameraController(firstCamera, ResolutionPreset.medium);
 
       _initializeControllerFuture = _controller.initialize();
       setState(() {}); // Rebuild UI after initialization
@@ -104,8 +100,9 @@ class _CameraPageState extends State<CameraPage> {
 
     try {
       final imagePicker = ImagePicker();
-      final pickedFile =
-          await imagePicker.pickImage(source: ImageSource.gallery);
+      final pickedFile = await imagePicker.pickImage(
+        source: ImageSource.gallery,
+      );
 
       if (pickedFile != null) {
         await _processImageFile(pickedFile.path);
@@ -122,101 +119,34 @@ class _CameraPageState extends State<CameraPage> {
     }
   }
 
-  // // Process image file with OCR
-  // Future<void> _processImageFile(String imagePath) async {
-  //   try {
-  //     final inputImage = InputImage.fromFilePath(imagePath);
-  //     final recognizedText = await _textRecognizer.processImage(inputImage);
+  // Process image file with OCR
+  Future<void> _processImageFile(String imagePath) async {
+    try {
+      final inputImage = InputImage.fromFilePath(imagePath);
+      final recognizedText = await _textRecognizer.processImage(inputImage);
 
-  //     setState(() {
-  //       _extractedText = recognizedText.text;
-  //     });
+      setState(() {
+        _extractedText = recognizedText.text;
+      });
 
-  //     if (_extractedText.isNotEmpty) {
-  //       await _tts.speak(_extractedText);
-  //     }
-  //   } catch (e) {
-  //     print('Error recognizing text: $e');
-  //     setState(() {
-  //       _extractedText = 'Error recognizing text: $e';
-  //     });
-  //   }
-  // }
-  // //CHANGE in _processImageFile
-  // Future<void> _processImageFile(String imagePath) async {
-  //   try {
-  //     final inputImage = InputImage.fromFilePath(imagePath);
-  //     final recognizedText = await _textRecognizer.processImage(inputImage);
-
-  //     setState(() {
-  //       _extractedText = recognizedText.text;
-  //     });
-
-  //     if (_extractedText.isNotEmpty) {
-  //       await _tts.setLanguage('fil-PH'); // ensure Filipino each time
-  //       await _tts.speak(_extractedText);
-  //     }
-  //   } catch (e) {
-  //     print('Error recognizing text: $e');
-  //     setState(() {
-  //       _extractedText = 'Error recognizing text: $e';
-  //     });
-  //   }
-  // }
-//   Future<void> _processImageFile(String imagePath) async {
-//   try {
-//     final inputImage = InputImage.fromFilePath(imagePath);
-//     final recognizedText = await _textRecognizer.processImage(inputImage);
-
-//   //  setState(() {
-//       final extracted  = recognizedText.text;
-//   // });
-
-//     if (_extractedText.isNotEmpty) {
-//       await _tts.setLanguage('fil-PH');
-//       await _tts.speak(extracted);
-
-//       // ✅ Return to previous screen with extracted text
-//       Navigator.pop(context, extracted);
-//     }
-//   } catch (e) {
-//     print('Error recognizing text: $e');
-//     setState(() {
-//       _extractedText = 'Error recognizing text: $e';
-//     });
-//   }
-// }
-
-Future<void> _processImageFile(String imagePath) async {
-  try {
-    final inputImage = InputImage.fromFilePath(imagePath);
-    final recognizedText = await _textRecognizer.processImage(inputImage);
-
-    final extracted = recognizedText.text;
-
-    if (extracted.isNotEmpty) {
-      // await _tts.setLanguage('fil-PH');
-      // await _tts.speak(extracted);
-
-      Navigator.pop(context, extracted);
+      if (_extractedText.isNotEmpty) {
+        await _tts.speak(_extractedText);
+      }
+    } catch (e) {
+      print('Error recognizing text: $e');
+      setState(() {
+        _extractedText = 'Error recognizing text: $e';
+      });
     }
-  } catch (e) {
-    print('Error recognizing text: $e');
-    setState(() {
-      _extractedText = 'Error recognizing text: $e';
-    });
   }
-}
-
-
 
   // Copy text to clipboard
   Future<void> _copyToClipboard() async {
     if (_extractedText.isNotEmpty) {
       await Clipboard.setData(ClipboardData(text: _extractedText));
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Text copied to clipboard')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Text copied to clipboard')));
     }
   }
 
@@ -259,7 +189,8 @@ Future<void> _processImageFile(String imagePath) async {
             flex: 3,
             child: !_isCameraAvailable
                 ? const Center(
-                    child: Text('Camera not available or permission denied.'))
+                    child: Text('Camera not available or permission denied.'),
+                  )
                 : FutureBuilder<void>(
                     future: _initializeControllerFuture,
                     builder: (context, snapshot) {
@@ -271,14 +202,16 @@ Future<void> _processImageFile(String imagePath) async {
                               const Center(
                                 child: CircularProgressIndicator(
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.white),
+                                    Colors.white,
+                                  ),
                                 ),
                               ),
                           ],
                         );
                       } else if (snapshot.hasError) {
                         return Center(
-                            child: Text('Error initializing camera.'));
+                          child: Text('Error initializing camera.'),
+                        );
                       } else {
                         return const Center(child: CircularProgressIndicator());
                       }
@@ -329,34 +262,36 @@ Future<void> _processImageFile(String imagePath) async {
           ],
         ],
       ),
-      // bottomNavigationBar: _extractedText.isNotEmpty
-      //     ? SafeArea(
-      //         child: Padding(
-      //           padding:
-      //               const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      //           child: Row(
-      //             children: [
-      //               const Text('Speed:'),
-      //               Expanded(
-      //                 child: Slider(
-      //                   value: _speechRate,
-      //                   min: 0.1,
-      //                   max: 1.0,
-      //                   divisions: 9,
-      //                   label: _speechRate.toStringAsFixed(1),
-      //                   onChanged: _adjustSpeechRate,
-      //                 ),
-      //               ),
-      //               IconButton(
-      //                 icon: const Icon(Icons.stop),
-      //                 onPressed: _tts.stop,
-      //                 tooltip: 'Stop speech',
-      //               ),
-      //             ],
-      //           ),
-      //         ),
-      //       )
-      //     : null,
+      bottomNavigationBar: _extractedText.isNotEmpty
+          ? SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: Row(
+                  children: [
+                    const Text('Speed:'),
+                    Expanded(
+                      child: Slider(
+                        value: _speechRate,
+                        min: 0.1,
+                        max: 1.0,
+                        divisions: 9,
+                        label: _speechRate.toStringAsFixed(1),
+                        onChanged: _adjustSpeechRate,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.stop),
+                      onPressed: _tts.stop,
+                      tooltip: 'Stop speech',
+                    ),
+                  ],
+                ),
+              ),
+            )
+          : null,
     );
   }
 }

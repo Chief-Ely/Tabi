@@ -24,9 +24,7 @@ class IconButtonOutlined extends StatelessWidget {
         foregroundColor: colorScheme.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          side: BorderSide(
-            color: theme.dividerColor,
-          ),
+          side: BorderSide(color: theme.dividerColor),
         ),
       ),
     );

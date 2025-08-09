@@ -15,7 +15,6 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
   String _recognizedText = '';
   String _statusMessage = 'Tap the microphone to start speaking';
   String _errorMessage = '';
-  
 
   @override
   void initState() {
@@ -67,7 +66,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
           }
         }),
         listenFor: const Duration(seconds: 30),
-        localeId: 'fil_PH', // Change to your preferred language
+        localeId: 'en_US',
       );
 
       if (started) {
@@ -162,10 +161,7 @@ class _VoiceInputPageState extends State<VoiceInputPage> {
                   child: Column(
                     children: [
                       if (_recognizedText.isNotEmpty)
-                        Text(
-                          _recognizedText,
-                          style: theme.textTheme.bodyLarge,
-                        )
+                        Text(_recognizedText, style: theme.textTheme.bodyLarge)
                       else
                         Text(
                           'Your transcription will appear here',

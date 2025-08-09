@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "18304546597",
+    "project_id": "tabi-b362b",
+    "storage_bucket": "tabi-b362b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:18304546597:android:5768f8e8465981c3e14ccc",
+        "android_client_info": {
+          "package_name": "com.example.a_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAeg1RnXIdtA1MmRQTrF264cag98_DJrQ8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

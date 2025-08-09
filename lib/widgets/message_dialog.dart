@@ -4,14 +4,13 @@ import 'dialog_card.dart';
 import 'button.dart' as custom;
 
 class MessageDialog extends StatelessWidget {
-  const MessageDialog({
-    super.key,
-    required this.message,
-  });
+  const MessageDialog({super.key, required this.message});
   final String message;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return DialogCard(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -19,9 +18,10 @@ class MessageDialog extends StatelessWidget {
         children: [
           Text(
             message,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
+              color: theme.hintColor,
             ),
             textAlign: TextAlign.start,
           ),
