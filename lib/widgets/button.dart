@@ -31,18 +31,18 @@ class Button extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor:
-              isOutlined ? colorScheme.surface : colorScheme.primary,
-          foregroundColor:
-              isOutlined ? colorScheme.primary : colorScheme.onPrimary,
+          backgroundColor: isOutlined
+              ? colorScheme.surface
+              : colorScheme.primary,
+          foregroundColor: isOutlined
+              ? colorScheme.primary
+              : colorScheme.onPrimary,
           disabledBackgroundColor: isDark ? Colors.grey[800] : Colors.grey[300],
           disabledForegroundColor: isDark ? Colors.white : Colors.black,
           side: BorderSide(
             color: isOutlined ? colorScheme.primary : Colors.black,
           ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           elevation: 0,
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),

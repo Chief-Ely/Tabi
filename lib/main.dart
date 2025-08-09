@@ -1,34 +1,21 @@
+import 'package:tabi/services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:url_strategy/url_strategy.dart';
 import 'camera_page.dart';
 import 'dictionary_page.dart';
-import 'register_page.dart';
 import 'saved_page.dart';
 import 'stt.dart';
 import 'settings_page.dart';
 import 'history_page.dart';
 import 'home_page.dart';
+import 'register_page.dart';
 import 'change_notifier/registration_controller.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-
-// void main() {
-//   setPathUrlStrategy();
-//   runApp(
-//     MultiProvider(
-//       providers: [
-//         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-//         ChangeNotifierProvider(create: (_) => RegistrationController()),
-//       ],
-//       child: const MyApp(),
-//     ),
-//   );
-// }
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter(); // ✅ Required for Hive to work
-  setPathUrlStrategy();
+  await Firebase.initializeApp();
 
   runApp(
     MultiProvider(
@@ -41,7 +28,6 @@ void main() async {
   );
 }
 
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -51,13 +37,13 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Theme Demo',
+      title: 'TABI Translator',
       themeMode: themeProvider.themeMode,
       theme: ThemeProvider.lightTheme,
       darkTheme: ThemeProvider.darkTheme,
       initialRoute: '/',
       routes: {
-        '/': (context) => const SplashScreen(),
+        '/': (context) => const AuthWrapper(),
         '/register': (context) => const RegisterPage(),
         '/dashboard': (context) => const DashboardScreen(),
         '/settings': (context) => const SettingsPage(),
@@ -66,18 +52,45 @@ class MyApp extends StatelessWidget {
         '/voice': (context) => const VoiceInputPage(),
         '/dictionary': (context) => const DictionaryPage(),
         '/camera': (context) => const CameraPage(),
-        '/voice-input': (context) => const VoiceInputPage(),
+      },
+      builder: (context, child) {
+        ErrorWidget.builder = (errorDetails) {
+          return Scaffold(
+            body: Center(child: Text('Error: ${errorDetails.exception}')),
+          );
+        };
+        return child!;
       },
     );
   }
 }
 
-// ThemeProvider manages the app theme state
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: AuthService.userStream,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SplashScreen();
+        }
+
+        if (snapshot.hasData && AuthService.isEmailVerified) {
+          return const DashboardScreen();
+        }
+
+        return const RegisterPage();
+      },
+    );
+  }
+}
+
 class ThemeProvider extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.light;
 
   ThemeMode get themeMode => _themeMode;
-
   bool get isDarkMode => _themeMode == ThemeMode.dark;
 
   void toggleTheme(bool isOn) {
@@ -85,7 +98,6 @@ class ThemeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Custom light theme
   static final ThemeData lightTheme = ThemeData.light().copyWith(
     scaffoldBackgroundColor: const Color(0xFFFFFFFF),
     colorScheme: const ColorScheme.light(
@@ -116,17 +128,15 @@ class ThemeProvider extends ChangeNotifier {
         color: Colors.black,
       ),
     ).apply(bodyColor: Colors.black),
-    dialogTheme: DialogThemeData(backgroundColor: Colors.white),
   );
 
-  // Custom dark theme
   static final ThemeData darkTheme = ThemeData.dark().copyWith(
     scaffoldBackgroundColor: const Color(0xFF121212),
     colorScheme: const ColorScheme.dark(
       primary: Colors.blueAccent,
       secondary: Colors.tealAccent,
       tertiary: Colors.lightBlueAccent,
-      surface: Color(0xFF686868),
+      surface: Color.fromARGB(255, 0, 0, 0),
     ),
     cardColor: Colors.blueGrey,
     hintColor: Colors.white,

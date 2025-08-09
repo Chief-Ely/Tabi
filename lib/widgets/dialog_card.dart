@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 
 class DialogCard extends StatelessWidget {
-  const DialogCard({
-    required this.child,
-    super.key,
-  });
+  const DialogCard({required this.child, super.key});
 
   final Widget child;
 
@@ -21,13 +18,8 @@ class DialogCard extends StatelessWidget {
           padding: const EdgeInsets.all(24.0),
           decoration: BoxDecoration(
             color: theme.dialogBackgroundColor,
-            border: Border.all(
-              width: 2,
-              color: theme.dividerColor,
-            ),
-            boxShadow: const [
-              BoxShadow(offset: Offset(4, 4)),
-            ],
+            border: Border.all(width: 2, color: theme.dividerColor),
+            boxShadow: const [BoxShadow(offset: Offset(4, 4))],
             borderRadius: BorderRadius.circular(16),
           ),
           child: child,

@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:Tabi/core/dialogs.dart';
-import 'package:Tabi/services/auth_service.dart';
+import 'package:tabi/core/dialogs.dart';
+import 'package:tabi/services/auth_service.dart';
 
 const Map<String, String> authExceptionMapper = {
   'email-already-in-use':
@@ -22,7 +22,6 @@ const Map<String, String> authExceptionMapper = {
 class RegistrationController extends ChangeNotifier {
   bool _isRegisterMode = true;
   bool _isPasswordHidden = true;
-
   bool _isLoading = false;
 
   String _userName = '';
@@ -31,7 +30,6 @@ class RegistrationController extends ChangeNotifier {
 
   bool get isRegisterMode => _isRegisterMode;
   bool get isPasswordHidden => _isPasswordHidden;
-
   bool get isLoading => _isLoading;
 
   String get userName => _userName.trim();
@@ -77,25 +75,115 @@ class RegistrationController extends ChangeNotifier {
   Future<void> authenticateWithEmailAndPassword({
     required BuildContext context,
   }) async {
+    if (_email.isEmpty ||
+        _password.isEmpty ||
+        (_isRegisterMode && _userName.isEmpty)) {
+      showMessageDialog(
+        context: context,
+        message: 'Please fill in all required fields',
+      );
+      return;
+    }
+
     isLoading = true;
     try {
-      if (isRegisterMode) {
+      if (_isRegisterMode) {
         await AuthService.register(
           userName: userName,
           email: email,
           password: password,
         );
-      } else {}
+
+        if (!context.mounted) return;
+        showMessageDialog(
+          context: context,
+          message:
+              'A verification email was sent to the provided email address. Please confirm your email to proceed to the app.',
+        );
+
+        while (!AuthService.isEmailVerified) {
+          await Future.delayed(
+            const Duration(seconds: 5),
+            () => AuthService.user?.reload(),
+          );
+        }
+      } else {
+        await AuthService.login(email: email, password: password);
+      }
     } on FirebaseAuthException catch (e) {
       if (!context.mounted) return;
       showMessageDialog(
         context: context,
-        message: authExceptionMapper[e.code] ?? 'An unknown error occured!',
+        message: authExceptionMapper[e.code] ?? 'An unknown error occurred!',
       );
     } catch (e) {
-      showMessageDialog(context: context, message: 'An unknown error occured!');
+      if (!context.mounted) return;
+      showMessageDialog(
+        context: context,
+        message: 'An unknown error occurred!',
+      );
     } finally {
       isLoading = false;
     }
   }
+
+  Future<void> authenticateWithGoogle({required BuildContext context}) async {
+    try {
+      await AuthService.signInWithGoogle();
+    } on NoGoogleAccountChosenException {
+      return;
+    } catch (e) {
+      if (!context.mounted) return;
+      showMessageDialog(context: context, message: 'An unkown error occurred!');
+    }
+  }
+
+  Future<void> resetPassword({
+    required BuildContext context,
+    required String email,
+  }) async {
+    if (email.isEmpty) {
+      showMessageDialog(
+        context: context,
+        message: 'Please enter your email address',
+      );
+      return;
+    }
+
+    isLoading = true;
+    try {
+      await AuthService.resetPassword(email: email);
+      if (!context.mounted) return;
+      showMessageDialog(
+        context: context,
+        message:
+            'A reset password link has been sent to $email. Open the link to reset your password',
+      );
+    } on FirebaseAuthException catch (e) {
+      if (!context.mounted) return;
+      showMessageDialog(
+        context: context,
+        message: authExceptionMapper[e.code] ?? 'An unknown error occurred!',
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+      showMessageDialog(
+        context: context,
+        message: 'An unknown error occurred!',
+      );
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  void clearFields() {
+    _userName = '';
+    _email = '';
+    _password = '';
+    notifyListeners();
+  }
+}
+
+class NoGoogleAccountChosenException implements Exception {
+  const NoGoogleAccountChosenException();
 }
