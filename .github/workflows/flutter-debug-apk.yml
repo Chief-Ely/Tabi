@@ -20,6 +20,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: stable   # <- ONLY this, remove 'channel' entirely
+	  cache: false
 
       - name: Install dependencies
         run: flutter pub get
