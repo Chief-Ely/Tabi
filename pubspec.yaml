@@ -48,6 +48,8 @@ dependencies:
   flutter_tts: ^3.6.3
   image_picker: ^1.0.4
   firebase_auth: 6.0.0
+  onnxruntime: ^1.4.1   # for loading and running the ONNX models
+  path_provider: ^2.0.15 # for locating local storage paths
 
 dev_dependencies:
   flutter_test:
@@ -82,6 +84,22 @@ flutter:
     - assets/logo_1.png
     - assets/logo_2.png
     - assets/profile.jpg
+
+  # Models
+    - assets/models/tl_en/
+    - assets/models/en_ceb/
+    - assets/models/tl_en/encoder_model_quantized.onnx
+    - assets/models/tl_en/decoder_model_quantized.onnx
+    - assets/models/tl_en/decoder_with_past_model_quantized.onnx
+    - assets/models/tl_en/source.spm
+    - assets/models/tl_en/target.spm
+
+    - assets/models/en_ceb/encoder_model_quantized.onnx
+    - assets/models/en_ceb/decoder_model_quantized.onnx
+    - assets/models/en_ceb/decoder_with_past_model_quantized.onnx
+    - assets/models/en_ceb/source.spm
+    - assets/models/en_ceb/target.spm
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

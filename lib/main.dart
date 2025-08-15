@@ -11,22 +11,17 @@ import 'history_page.dart';
 import 'home_page.dart';
 import 'change_notifier/registration_controller.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'functions/translator.dart';
 
 
-// void main() {
-//   setPathUrlStrategy();
-//   runApp(
-//     MultiProvider(
-//       providers: [
-//         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-//         ChangeNotifierProvider(create: (_) => RegistrationController()),
-//       ],
-//       child: const MyApp(),
-//     ),
-//   );
-// }
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  //load model
+  final translator = Translator();
+  await translator.loadAllModels();  // You can store this translator in a provider or singleton if needed
+
+
   await Hive.initFlutter(); // ✅ Required for Hive to work
   setPathUrlStrategy();
 
@@ -35,6 +30,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => RegistrationController()),
+         Provider<Translator>.value(value: translator),
       ],
       child: const MyApp(),
     ),

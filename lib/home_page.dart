@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'camera_page.dart';
 import 'dictionary_page.dart';
 import 'register_page.dart';
@@ -10,6 +11,8 @@ import 'history_page.dart';
 import 'services/auth_service.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:flutter_tts/flutter_tts.dart';
+import 'functions/translator.dart';
+
 
 final TextEditingController _textController = TextEditingController();
 
@@ -255,21 +258,38 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
-  void _translateText() {
-    if (_textController.text.isEmpty) return;
+void _translateText() async {
+  if (_textController.text.isEmpty) return;
+
+  setState(() {
+    _isTranslating = true;
+  });
+
+  try {
+    final translator = Provider.of<Translator>(context, listen: false);
+    String inputText = _textController.text;
+    String translated = '';
+
+    if (_fromLanguage == 'Bisaya') {
+      translated = await translator.translateCebToTl(inputText);
+    } else if (_fromLanguage == 'Tagalog') {
+      translated = await translator.translateTlToCeb(inputText);
+    }
 
     setState(() {
-      _isTranslating = true;
+      _translatedText = translated;
     });
-
-    Future.delayed(const Duration(seconds: 1), () {
-      setState(() {
-        _translatedText =
-            "This is a test translation of: ${_textController.text}";
-        _isTranslating = false;
-      });
+  } catch (e) {
+    setState(() {
+      _translatedText = 'Translation failed: $e';
+    });
+  } finally {
+    setState(() {
+      _isTranslating = false;
     });
   }
+}
+
 
   void _swapLanguages() {
     setState(() {

@@ -19,6 +19,10 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
+    aaptOptions {
+        noCompress("onnx")
+    }
+
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.a_project"
@@ -41,4 +45,9 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    implementation("ai.djl.sentencepiece:sentencepiece:0.22.0")
+    implementation 'ai.djl:api:0.22.0'
 }
