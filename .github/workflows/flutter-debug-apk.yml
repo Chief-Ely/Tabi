@@ -19,9 +19,9 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: stable  # only this line, no 'channel'
+          flutter-version: stable   # <- ONLY this, remove 'channel' entirely
 
-      - name: Install Flutter dependencies
+      - name: Install dependencies
         run: flutter pub get
 
       - name: Accept Android licenses
@@ -30,7 +30,7 @@ jobs:
       - name: Build debug APK
         run: flutter build apk --debug
 
-      - name: Upload APK artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: debug-apk
