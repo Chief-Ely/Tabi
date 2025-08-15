@@ -48,6 +48,7 @@ flutter {
 }
 
 dependencies {
-    implementation("ai.djl.sentencepiece:sentencepiece:0.22.0")
-    implementation 'ai.djl:api:0.22.0'
+    implementation("ai.djl.sentencepiece:sentencepiece:0.33.0")
+    //implementation("ai.djl:api:0.33.0")
 }
+
