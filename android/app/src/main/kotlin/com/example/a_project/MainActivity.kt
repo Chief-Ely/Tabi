@@ -1,10 +1,9 @@
 package com.example.a_project
-
+import ai.djl.sentencepiece.SentencePieceProcessor
 import android.os.Bundle
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
-import ai.djl.sentencepiece.SentencePieceProcessor
 import java.io.File
 import java.io.FileOutputStream
 
