@@ -1,5 +1,10 @@
 package com.example.a_project
-import ai.djl.sentencepiece.SentencePieceProcessor
+import ai.djl.Application
+import ai.djl.Model
+import ai.djl.inference.Predictor
+import ai.djl.modality.nlp.preprocess.SentencePieceProcessor
+import ai.djl.ndarray.NDManager
+// import ai.djl.sentencepiece.SentencePieceProcessor
 import android.os.Bundle
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine

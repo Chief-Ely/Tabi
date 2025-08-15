@@ -48,7 +48,10 @@ flutter {
 }
 
 dependencies {
-    implementation("ai.djl.sentencepiece:sentencepiece:0.33.0")
     implementation("ai.djl:api:0.33.0")
+    implementation("ai.djl.sentencepiece:sentencepiece:0.33.0")
+    implementation("ai.djl.onnxruntime:onnxruntime-engine:0.33.0") // engine required
+    implementation("org.tensorflow:tensorflow-lite:2.12.0") // optional if using TF Lite
 }
+
 
