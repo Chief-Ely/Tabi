@@ -1,6 +1,5 @@
 name: Build Flutter Debug APK
 
-# Trigger on pushes and pull requests to main branch
 on:
   push:
     branches:
@@ -14,29 +13,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Set up Flutter
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: stable
+          flutter-version: stable  # only this line, no 'channel'
 
-      # Step 3: Install dependencies
       - name: Install Flutter dependencies
         run: flutter pub get
 
-      # Step 4: Accept Android licenses (needed for Android builds)
       - name: Accept Android licenses
         run: yes | flutter doctor --android-licenses
 
-      # Step 5: Build the debug APK
       - name: Build debug APK
         run: flutter build apk --debug
 
-      # Step 6: Upload APK as artifact
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
